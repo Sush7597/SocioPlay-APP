@@ -23,7 +23,6 @@ import okhttp3.OkHttpClient;
 
 public class Home extends AppCompatActivity {
     private TextView mTextMessage;
-    private Button Delete;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -47,12 +46,12 @@ public class Home extends AppCompatActivity {
         protected void onCreate (Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        Delete = findViewById(R.id.delete);
+            Button delete = findViewById(R.id.delete);
         mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        Delete.setOnClickListener(new OnClickListener() {
+        delete.setOnClickListener(new OnClickListener() {
                                       @Override
                                       public void onClick(View v) {
                                             DELETE obj= new DELETE();

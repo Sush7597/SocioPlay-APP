@@ -32,4 +32,6 @@
     <string name="Sign_up">Sign Up</string>
     <string name="Username">Username</string>
     <string name="Delete_Account">Delete Account</string>
+    <string name="email_Exists">Email Already Exists!</string>
+    <string name="User_Exists">Username Already Exists!</string>
 </resources>

@@ -50,9 +50,9 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
     private AutoCompleteTextView Email;
     private EditText password;
     private EditText confirm;
-    private View ProgressView;
     private AutoCompleteTextView Username;
     private View SignUpFormView;
+    private View progressView;
     private static final int REQUEST_READ_CONTACTS = 0;
     private UserSignupTask mAuthTask = null;
 
@@ -65,7 +65,7 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
         confirm = findViewById(R.id.re_Password);
         Username=findViewById(R.id.username);
         Button sign_up = findViewById(R.id.SignUp);
-        ProgressView = findViewById(R.id.sign_up_progress);
+        progressView = findViewById(R.id.sign_up_progress);
         SignUpFormView = findViewById(R.id.sign_form);
 
         confirm.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -228,7 +228,6 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
             if (pass1.equals(pass2)) {
                 // Show a progress spinner, and kick off a background task to
                 // perform the user login attempt.
-                showProgress(true);
                 mAuthTask = new UserSignupTask(email, pass1, username);
                 mAuthTask.execute((Void) null);
             } else
@@ -258,17 +257,15 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
                 SignUpFormView.setVisibility(show ? View.GONE : View.VISIBLE);
             }
         });
-
-        SignUpFormView.setVisibility(show ? View.VISIBLE : View.GONE);
-        SignUpFormView.animate().setDuration(shortAnimTime).alpha(
+        progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        progressView.animate().setDuration(shortAnimTime).alpha(
                 show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                SignUpFormView.setVisibility(show ? View.VISIBLE : View.GONE);
+                progressView.setVisibility(show ? View.VISIBLE : View.GONE);
             }
         });
     }
-
 
     @SuppressLint("StaticFieldLeak")
     public class UserSignupTask extends AsyncTask<Void, Void, Boolean> {
@@ -333,35 +330,64 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
                 String token = (networkResp.getString("result"));
                 Log.d("Token is :",token);
                 Log.d("Status Code is :",result);
-                if (result != null) {
                     if(result.equals("200"))
                     {
-                        onPostExecute();
+                        Log.d("VALUE :",result);
+                        onPostExecute(true,token,result);
                     }
-                    else if(result.equals("451"))
+
+                    else
                     {
-                        Username.setError("Already Exists!");
+                        onPostExecute(false,token,result);
                     }
-                    else if(result.equals("452"))
-                    {
-                        Email.setError("Already Exists!");
-                    }
-                    else if(result.equals("450"))
-                    {
-                        Email.setError("Already Exists!");
-                        Username.setError("Already Exists!");
-                    }
-                }
+
             } catch (Exception e) {
                 Log.d("InputStream", e.getLocalizedMessage());
             }
         }
-        private void onPostExecute() {
-            mAuthTask = null;
-            Intent intent=new Intent(SignUp.this,Home.class);
-                showProgress(true);
-                startActivity(intent);
 
+        private void onPostExecute(final boolean success,String token,String result) {
+            mAuthTask = null;
+            Intent intent1=new Intent(SignUp.this,Home.class);
+            if(success)
+            {   String S="STATUS";
+                Log.d("Starting",S);
+                intent1.putExtra("token",token);
+                startActivity(intent1);
+            }
+            else
+            {
+                if(result.equals("451"))
+            {
+                Username.setFocusable(true);
+                Username.setFocusableInTouchMode(true);
+                Username.setError(getString(R.string.User_Exists));
+                Username.requestFocus();
+
+            }
+            else if(result.equals("452"))
+            {   Email.setFocusable(true);
+                Email.setFocusableInTouchMode(true);
+                Email.setError(getString(R.string.email_Exists));
+                Email.requestFocus();
+            }
+            else if(result.equals("450"))
+            {
+
+                Email.setError(getString(R.string.email_Exists));
+                Email.requestFocus();
+                Username.setError(getString(R.string.User_Exists));
+                Username.requestFocus();
+
+            }
+            }
+
+        }
+        @Override
+        protected void onCancelled()
+        {
+            mAuthTask = null;
+            showProgress(false);
         }
 
 
