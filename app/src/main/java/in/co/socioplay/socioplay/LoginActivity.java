@@ -4,8 +4,11 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.media.session.MediaSessionCompat;
@@ -25,6 +28,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -37,6 +41,7 @@ import org.json.JSONObject;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -63,7 +68,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
-    Button signup;
+    TextView signup;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +82,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
+                    InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    assert inputManager != null;
+                    inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
                     attemptLogin();
                     return true;
                 }
@@ -89,7 +97,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                assert inputManager != null;
+                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+               attemptLogin();
             }
         });
 
@@ -105,8 +116,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 startActivity(intent);
             }
         });
-
-
 
     }
 
@@ -169,7 +178,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mUserView.getText().toString();
+        String unam = mUserView.getText().toString();
         String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
@@ -183,7 +192,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
+        if (TextUtils.isEmpty(unam)) {
         mUserView.setError(getString(R.string.error_field_required));
         focusView = mUserView;
         cancel = true;
@@ -196,8 +205,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     } else {
         // Show a progress spinner, and kick off a background task to
         // perform the user login attempt.
-        showProgress(true);
-        mAuthTask = new UserLoginTask(email, password);
+            showProgress(true);
+        mAuthTask = new UserLoginTask(unam, password);
         mAuthTask.execute((Void) null);
     }
 }
@@ -216,27 +225,27 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Shows the progress UI and hides the login form.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private void showProgress(final boolean show) {
+    private void showProgress(final boolean shw) {
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
         // for very easy animations. If available, use these APIs to fade-in
         // the progress spinner.
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-        mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        mLoginFormView.setVisibility(shw ? View.GONE : View.VISIBLE);
         mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                shw ? 0 : 1).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+                mLoginFormView.setVisibility(shw ? View.GONE : View.VISIBLE);
             }
         });
 
-        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mProgressView.setVisibility(shw ? View.VISIBLE : View.GONE);
         mProgressView.animate().setDuration(shortAnimTime).alpha(
-                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                shw ? 1 : 0).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                mProgressView.setVisibility(shw ? View.VISIBLE : View.GONE);
             }
         });
     }
@@ -329,12 +338,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 e.printStackTrace(); }
             return null;
         }
-        private void getServerResponse(JSONObject log) {
+        private void getServerResponse(final JSONObject log) {
             JSONObject networkResp = new JSONObject();
 
             try {
                 try {
-                    URL url = new URL("http://59f9d951.ngrok.io/users/login");
+                    URL url = new URL("https://b18106f3.ngrok.io/users/login");
                     MediaType JSON = MediaType.parse("application/json; charset=utf-8");
                     OkHttpClient client = new OkHttpClient();
                     okhttp3.RequestBody body = RequestBody.create(JSON, log.toString());
@@ -344,8 +353,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                                                     .build();
 
                     okhttp3.Response response = client.newCall(request).execute();
-                    String networkResp1 = response.body().string();
-                   networkResp= new JSONObject(networkResp1);
+                    String networkResp1=response.body().string();
+                    networkResp= new JSONObject(networkResp1);
 
                 } catch (Exception ex)
                 {
@@ -354,43 +363,48 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 }
                 String result = (networkResp.getString("statusCode"));
                 String token = networkResp.getString("result");
-
                 Log.d("Status Code is :",result);
-                Log.d("Token is :" ,token);
+                Log.d("Token is :",token);
+                SharedPreferences sp = getSharedPreferences("socioplay", MODE_PRIVATE);
+                SharedPreferences.Editor editor= sp.edit();
+                editor.putString("token", token);
+                editor.apply();
+
                 String S="EVENT STATUS";
-                if (result != null) {
+                if (result != null)
+                {
                     if(result.equals("200"))
                     {
                         Log.d("LogIn success",S);
-                       onPostExecute(true , token);
+                       onPostExecute(token);
+
                     }
                     else
                     {
                         Log.d("LogIn Failed",S);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                showProgress(false);
+                                Toast.makeText(LoginActivity.this, "Invalid Username Or Password!", Toast.LENGTH_LONG).show();
+                                mPasswordView.requestFocus();
+                                mPasswordView.setError("Invalid Username or Password!");
+                            }
+                        });
 
-                        onPostExecute(false, token );
                     }
                 }
             } catch (Exception e) {
                 Log.d("InputStream", e.getLocalizedMessage());
             }
         }
-        private void onPostExecute(final boolean success,String token) {
-            mAuthTask = null;
-            Intent intent=new Intent(LoginActivity.this,Home.class);
-            if (success)
-            {
+        private void onPostExecute(String token) {
+          //  mAuthTask = null;
+
+                Intent intent=new Intent(LoginActivity.this,Home.class);
                 String S="STATUS";
-                showProgress(true);
-                intent.putExtra("token",token);
                 Log.d("Starting!",S);
                 startActivity(intent);
-            }
-            else
-                {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-                }
         }
         @Override
         protected void onCancelled()

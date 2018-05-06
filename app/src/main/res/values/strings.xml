@@ -34,4 +34,6 @@
     <string name="Delete_Account">Delete Account</string>
     <string name="email_Exists">Email Already Exists!</string>
     <string name="User_Exists">Username Already Exists!</string>
+    <string name="error_incorrect">Invalid Username or Password!</string>
+    <string name="create_a_new_account">Create a new account</string>
 </resources>

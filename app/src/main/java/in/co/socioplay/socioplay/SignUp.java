@@ -8,6 +8,7 @@ import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -55,7 +56,7 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
     private View progressView;
     private static final int REQUEST_READ_CONTACTS = 0;
     private UserSignupTask mAuthTask = null;
-
+    private TextView login;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +68,7 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
         Button sign_up = findViewById(R.id.SignUp);
         progressView = findViewById(R.id.sign_up_progress);
         SignUpFormView = findViewById(R.id.sign_form);
-
+        login=findViewById(R.id.Log);
         confirm.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -85,6 +86,14 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
             }
         });
 
+
+        login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent act = new Intent(SignUp.this, LoginActivity.class);
+                startActivity(act);
+            }
+        });
 
     }
 
@@ -219,7 +228,12 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
             focusView = Email;
             cancel = true;
         }
-
+        if (!isEmailValid())
+        {
+            Email.setError(getString(R.string.error_invalid_email));
+            focusView = Email;
+            cancel = true;
+        }
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
@@ -228,6 +242,7 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
             if (pass1.equals(pass2)) {
                 // Show a progress spinner, and kick off a background task to
                 // perform the user login attempt.
+                showProgress(true);
                 mAuthTask = new UserSignupTask(email, pass1, username);
                 mAuthTask.execute((Void) null);
             } else
@@ -239,6 +254,18 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
         return password.length() > 4;
+    }
+
+    private boolean isEmailValid(){
+
+        String getText=Email.getText().toString().trim();
+
+        return Pattern.compile("^(([\\w-]+\\.)+[\\w-]+|([a-zA-Z]{1}|[\\w-]{2,}))@"
+                + "((([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
+                + "[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\."
+                + "([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
+                + "[0-9]{1,2}|25[0-5]|2[0-4][0-9])){1}|"
+                + "([a-zA-Z]+[\\w-]+\\.)+[a-zA-Z]{2,4})$").matcher(getText).matches();
     }
 
 
@@ -308,7 +335,7 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
 
             try {
                 try {
-                    URL url = new URL("http://59f9d951.ngrok.io/users/signup");
+                    URL url = new URL("https://b18106f3.ngrok.io/users/signup");
                     MediaType JSON = MediaType.parse("application/json; charset=utf-8");
                     OkHttpClient client = new OkHttpClient();
                     okhttp3.RequestBody body = RequestBody.create(JSON, log.toString());
@@ -330,6 +357,10 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
                 String token = (networkResp.getString("result"));
                 Log.d("Token is :",token);
                 Log.d("Status Code is :",result);
+                SharedPreferences sp = getSharedPreferences("socioplay", MODE_PRIVATE);
+                SharedPreferences.Editor editor= sp.edit();
+                editor.putString("token", token);
+                editor.apply();
                     if(result.equals("200"))
                     {
                         Log.d("VALUE :",result);
@@ -352,32 +383,51 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
             if(success)
             {   String S="STATUS";
                 Log.d("Starting",S);
-                intent1.putExtra("token",token);
                 startActivity(intent1);
             }
             else
             {
                 if(result.equals("451"))
             {
-                Username.setFocusable(true);
-                Username.setFocusableInTouchMode(true);
-                Username.setError(getString(R.string.User_Exists));
-                Username.requestFocus();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        showProgress(false);
+                        Username.setFocusable(true);
+                        Username.requestFocus();
+                        Username.setError(getString(R.string.User_Exists));
 
+                    }
+                });
             }
             else if(result.equals("452"))
-            {   Email.setFocusable(true);
-                Email.setFocusableInTouchMode(true);
-                Email.setError(getString(R.string.email_Exists));
-                Email.requestFocus();
+            {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        showProgress(false);
+                        Email.setFocusable(true);
+                        Email.requestFocus();
+                        Email.setError(getString(R.string.email_Exists));
+
+                    }
+                });
+
+
             }
             else if(result.equals("450"))
             {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        showProgress(false);
+                        Email.requestFocus();
+                        Email.setError(getString(R.string.email_Exists));
+                        Username.requestFocus();
+                        Username.setError(getString(R.string.User_Exists));
 
-                Email.setError(getString(R.string.email_Exists));
-                Email.requestFocus();
-                Username.setError(getString(R.string.User_Exists));
-                Username.requestFocus();
+                    }
+                });
 
             }
             }

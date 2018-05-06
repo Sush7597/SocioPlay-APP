@@ -12,6 +12,7 @@
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_marginBottom="8dp"
         android:visibility="gone" />
 
@@ -126,6 +127,16 @@
                 android:layout_marginBottom="20dp"
                 />
 
+            <TextView
+                android:id="@+id/Log"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Already Have an Account?"
+                android:focusable="true"
+                android:clickable="true"
+                android:textColor="@color/colorPrimaryDark"
+            />
 
         </LinearLayout>
 

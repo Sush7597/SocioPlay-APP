@@ -1,12 +1,17 @@
 package in.co.socioplay.socioplay;
 
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,10 +24,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import okhttp3.OkHttpClient;
 
+import static android.provider.Contacts.SettingsColumns.KEY;
 
 
 public class Home extends AppCompatActivity {
     private TextView mTextMessage;
+    String  token1="null";
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -42,24 +49,65 @@ public class Home extends AppCompatActivity {
             return false;
         }
     };
-        @Override
+
+
+    @Override
         protected void onCreate (Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-            Button delete = findViewById(R.id.delete);
-        mTextMessage = (TextView) findViewById(R.id.message);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        mTextMessage = findViewById(R.id.message);
+        BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        delete.setOnClickListener(new OnClickListener() {
-                                      @Override
-                                      public void onClick(View v) {
-                                            DELETE obj= new DELETE();
-                                            obj.doInBackground();
-                                      }
-                                  }
-        );
+        token();
+
     }
+
+    public void token()
+    {
+
+        SharedPreferences sp = getSharedPreferences("socioplay",MODE_PRIVATE);
+        token1 = sp.getString("token", "null");
+        Log.d("Stored Token:", token1);
+
+        if(token1.equals("null"))
+        {
+            Intent act=new Intent(this,LoginActivity.class);
+            startActivity(act);
+        }
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+            getMenuInflater().inflate(R.menu.menu_main,menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id=item.getItemId();
+        switch (id)
+        {
+            case R.id.signUp :
+                Intent in = new Intent(Home.this,SignUp.class);
+                 startActivity(in);
+                 break;
+            case R.id.signIn :
+                Intent in2 = new Intent(Home.this,LoginActivity.class);
+                startActivity(in2);
+                break;
+            case R.id.del :
+                DELETE obj= new DELETE();
+                obj.doInBackground();
+                Intent in3 = new Intent(Home.this,LoginActivity.class);
+                startActivity(in3);
+                break;
+
+        }
+
+            return super.onOptionsItemSelected(item);
+    }
+
     public class DELETE extends AsyncTask<Void,Void,Boolean>
     {
 
@@ -67,15 +115,10 @@ public class Home extends AppCompatActivity {
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    String token = null;
-                    Bundle bundle = getIntent().getExtras();
-                    if (bundle != null) {
-                        token = (String) bundle.getCharSequence("token");
-                    }
-                    Log.d("Token", token);
+
                     URL url = null;
                     try {
-                        url = new URL("http://59f9d951.ngrok.io/users/delete");
+                        url = new URL("https://b18106f3.ngrok.io/users/delete");
 
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
@@ -84,7 +127,7 @@ public class Home extends AppCompatActivity {
                     OkHttpClient client = new OkHttpClient();
                     okhttp3.Request request = new okhttp3.Request.Builder()
                                .url(url)
-                                 .header("Authorization", "Bearer "+ token)
+                                 .header("Authorization", "Bearer "+ token1)
                                   .header("Content-Type","application/json")
                                      .build();
 
@@ -114,14 +157,11 @@ public class Home extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
-
                 }
             }
 
             );
             thread.start();
-
     }
 
         @Override
