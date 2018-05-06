@@ -19,6 +19,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -88,20 +90,27 @@ public class Home extends AppCompatActivity {
         int id=item.getItemId();
         switch (id)
         {
-            case R.id.signUp :
-                Intent in = new Intent(Home.this,SignUp.class);
-                 startActivity(in);
-                 break;
-            case R.id.signIn :
-                Intent in2 = new Intent(Home.this,LoginActivity.class);
-                startActivity(in2);
-                break;
             case R.id.del :
                 DELETE obj= new DELETE();
                 obj.doInBackground();
+                File sharedPreferenceFile = new File("/data/data/"+ getPackageName()+ "/shared_prefs/");
+                File[] listFiles = sharedPreferenceFile.listFiles();
+                for (File file : listFiles) {
+                    file.delete();
+                }
                 Intent in3 = new Intent(Home.this,LoginActivity.class);
                 startActivity(in3);
                 break;
+            case R.id.logout:
+                Logout ob = new Logout();
+                ob.doInBackground();
+                File sharedPreferenceFile1 = new File("/data/data/"+ getPackageName()+ "/shared_prefs/");
+                File[] listFiles1 = sharedPreferenceFile1.listFiles();
+                for (File file : listFiles1) {
+                    file.delete();
+                }
+                Intent in4 = new Intent(Home.this,LoginActivity.class);
+                startActivity(in4);
 
         }
 
@@ -176,6 +185,79 @@ public class Home extends AppCompatActivity {
             return null;
         }
     }
+
+    public class Logout extends AsyncTask<Void,Void,Boolean>
+    {
+
+        void LogOut () {
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    URL url = null;
+                    try {
+                        url = new URL("https://b18106f3.ngrok.io/users/logout");
+
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    }
+
+                    OkHttpClient client = new OkHttpClient();
+                    okhttp3.Request request = new okhttp3.Request.Builder()
+                            .url(url)
+                            .header("Authorization", "Bearer "+ token1)
+                            .header("Content-Type","application/json")
+                            .build();
+
+                    okhttp3.Response response = null;
+                    try {
+                        response = client.newCall(request).execute();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    String networkResp1 = null;
+                    try {
+                        networkResp1 = response.body().string();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    JSONObject res= null;
+                    try {
+                        res = new JSONObject(networkResp1);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        String status=res.getString("statusCode");
+                        Log.d("Status Code:", status);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+
+            }
+
+            );
+            thread.start();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            try {
+                // Simulate network access.
+                Thread.sleep(2000);
+                LogOut();
+
+            } catch (InterruptedException e) {
+                Log.d("Exception from :","doInBackground");
+                e.printStackTrace(); }
+            return null;
+        }
+    }
+
 
 
 }

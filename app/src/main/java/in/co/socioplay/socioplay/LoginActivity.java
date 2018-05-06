@@ -69,6 +69,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mProgressView;
     private View mLoginFormView;
     TextView signup;
+    TextView logot;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +95,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         Button mEmailSignInButton = findViewById(R.id.email_sign_in_button);
         signup= findViewById(R.id.SignUp);
+        logot=findViewById(R.id.logout);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -114,6 +116,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                 Intent intent =new Intent(LoginActivity.this,SignUp.class);
                 startActivity(intent);
+            }
+        });
+
+        logot.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
 

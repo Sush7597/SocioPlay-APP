@@ -36,4 +36,6 @@
     <string name="User_Exists">Username Already Exists!</string>
     <string name="error_incorrect">Invalid Username or Password!</string>
     <string name="create_a_new_account">Create a new account</string>
+    <string name="Log_out">Logout</string>
+    <string name="ResetP">Forgot Password!</string>
 </resources>

@@ -77,6 +77,15 @@
                 android:text="Sign In"
                 android:textStyle="bold"
                 android:layout_margin="50dp"                />
+            <TextView
+                android:id="@+id/resetP"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ResetP"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="30dp"
+                android:textColor="@color/colorPrimaryDark"
+                />
 
             <TextView
                 android:id="@+id/SignUp"

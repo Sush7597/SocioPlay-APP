@@ -2,19 +2,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="in.co.socioplay.socioplay.MainActivity">
+
+
     <item
-        android:id="@+id/signUp"
-        android:orderInCategory="100"
-        android:title="@string/Sign_up"
-         />
-    <item
-        android:id="@+id/signIn"
-        android:orderInCategory="100"
-        android:title="@string/action_sign_in"
-         />
+        android:id="@+id/logout"
+        android:orderInCategory="102"
+        android:title="@string/Log_out" />
     <item
         android:id="@+id/del"
-        android:orderInCategory="100"
+        android:orderInCategory="102"
         android:title="@string/Delete_Account"
          />
 </menu>
