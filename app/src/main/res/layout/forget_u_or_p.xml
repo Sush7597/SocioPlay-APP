@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:focusableInTouchMode="true"
+        android:hint="@string/Usernameforp"
+        android:imeActionId="6"
+        android:imeActionLabel="@string/Usernameforp"
+        android:imeOptions="actionUnspecified"
+        android:maxLines="1"
+        android:singleLine="true"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:text="@string/OR"
+        android:textSize="30sp" />
+
+    <EditText
+        android:id="@+id/mail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:focusableInTouchMode="true"
+        android:hint="@string/prompt_emailforu"
+        android:imeActionId="6"
+        android:imeActionLabel="@string/prompt_emailforu"
+        android:imeOptions="actionUnspecified"
+        android:maxLines="1"
+        android:singleLine="true" />
+
+
+
+
+</LinearLayout>
