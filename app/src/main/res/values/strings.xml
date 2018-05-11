@@ -38,4 +38,9 @@
     <string name="create_a_new_account">Create a new account</string>
     <string name="Log_out">Logout</string>
     <string name="ResetP">Forgot Password!</string>
+    <string name="ResetPorU">Forgot Password or Username?</string>
+    <string name="Request">Request To Change</string>
+    <string name="OR">OR</string>
+    <string name="Usernameforp">Enter Username to Recover Password.</string>
+    <string name="prompt_emailforu">Enter Email-ID to Recover Username.</string>
 </resources>

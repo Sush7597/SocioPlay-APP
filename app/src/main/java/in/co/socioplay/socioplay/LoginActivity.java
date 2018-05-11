@@ -4,7 +4,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -25,6 +28,7 @@ import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
@@ -39,9 +43,11 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -69,7 +75,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mProgressView;
     private View mLoginFormView;
     TextView signup;
-    TextView logot;
+    TextView reset;
+    EditText user;
+    EditText mail;
+    Dialog d;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,7 +104,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         Button mEmailSignInButton = findViewById(R.id.email_sign_in_button);
         signup= findViewById(R.id.SignUp);
-        logot=findViewById(R.id.logout);
+        reset=findViewById(R.id.resetP);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -109,7 +118,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
 
-        signup.setOnClickListener(new View.OnClickListener()
+        signup.setOnClickListener(new OnClickListener()
         {
             @Override
             public void onClick(View v) {
@@ -119,13 +128,43 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
-        logot.setOnClickListener(new OnClickListener() {
+       reset.setOnClickListener(new OnClickListener() {
+            @SuppressLint("InflateParams")
             @Override
             public void onClick(View v) {
+               View view =  LayoutInflater.from(LoginActivity.this).inflate(R.layout.forget_u_or_p,null);
+               AlertDialog.Builder forget = new AlertDialog.Builder(LoginActivity.this);
+                user = view.findViewById(R.id.name);
+                mail = view.findViewById(R.id.mail);
+                forget.setView(view);
+                forget.setPositiveButton("Request", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String user1 = user.getText().toString();
+                        String mail1 = mail.getText().toString();
+                        forget obj = new forget(user1, mail1);
+                        obj.doInBackground();
+                    }
+                });
+                d=forget.create();
+                d.show();
+
 
             }
         });
 
+
+    }
+    private boolean isEmailValid(){
+
+        String getText=mail.getText().toString().trim();
+
+        return Pattern.compile("^(([\\w-]+\\.)+[\\w-]+|([a-zA-Z]{1}|[\\w-]{2,}))@"
+                + "((([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
+                + "[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\."
+                + "([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
+                + "[0-9]{1,2}|25[0-5]|2[0-4][0-9])){1}|"
+                + "([a-zA-Z]+[\\w-]+\\.)+[a-zA-Z]{2,4})$").matcher(getText).matches();
     }
 
     private void populateAutoComplete() {
@@ -332,8 +371,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 if (log.length() > 0) {
                     doInBackground();
                 }
-            }catch (JSONException e){ e.printStackTrace();}
-
+            }catch (JSONException e){e.printStackTrace();}
         }
 
         @Override
@@ -422,4 +460,150 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
         }
     }
+
+
+    @SuppressLint("StaticFieldLeak")
+    public class forget extends AsyncTask<Void, Void, Boolean> {
+
+        final String mname;
+        final String mmail;
+        int i;
+
+
+        forget(String username, String Email)  {
+            mname = username;
+            mmail = Email;
+            Log.d("Status","Constructor Called");
+        }
+
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            try {
+                // Simulate network access.
+                Thread.sleep(2000);
+                if(mname!=null)
+                    i=1;
+                else if (mmail!=null)
+                    i=0;
+                getServerResponse(mname,mmail,i);
+            } catch (InterruptedException e) {
+                Log.d("Exception from :","doInBackground");
+                e.printStackTrace(); }
+            return null;
+        }
+        private void getServerResponse( final String log1 , final String log2, final int j) {
+
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject networkResp = null;
+                    if (j == 1) {
+                        try {
+                            try {
+                                String query = URLEncoder.encode(log1, "utf-8");
+                                URL url = new URL("https://b18106f3.ngrok.io/reset/password/" + query);
+                                OkHttpClient client = new OkHttpClient();
+                                okhttp3.Request request = new okhttp3.Request.Builder()
+                                        .url(url)
+                                        .header("Content-Type", "application/json")
+                                        .build();
+
+                                okhttp3.Response response = client.newCall(request).execute();
+                                Log.d("Response", "achieved");
+                                String networkResp1 = response.body().string();
+                                networkResp = new JSONObject(networkResp1);
+                            } catch (Exception ex) {
+                                String err = String.format("{\"result\":\"false\",\"error\":\"%s\"}", ex.getMessage());
+                                Log.d("Exception ex:", err);
+                            }
+                            String result = (networkResp.getString("statusCode"));
+                            Log.d("Status Code is :", result);
+                            String S = "EVENT STATUS";
+                            if (result != null) {
+                                if (result.equals("200")) {
+                                    Log.d("Reset success", S);
+                                    onPostExecute();
+
+                                } else {
+                                    Log.d("Reset Failed", S);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(LoginActivity.this, "Invalid Details!", Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+
+                                }
+                            }
+                        } catch (Exception e) {
+                            Log.d("InputStream", e.getLocalizedMessage());
+                        }
+                    }
+                    if (j == 2) {
+                        try {
+                            try {
+                                    String query = URLEncoder.encode(log2, "utf-8");
+                                    URL url = new URL("https://b18106f3.ngrok.io/reset/password/" + query);
+                                    OkHttpClient client = new OkHttpClient();
+                                    okhttp3.Request request = new okhttp3.Request.Builder()
+                                            .url(url)
+                                            .header("Content-Type", "application/json")
+                                            .build();
+
+                                    okhttp3.Response response = client.newCall(request).execute();
+                                    String networkResp1 = response.body().string();
+                                    networkResp = new JSONObject(networkResp1);
+
+                                }catch(Exception ex){
+                                    String err = String.format("{\"result\":\"false\",\"error\":\"%s\"}", ex.getMessage());
+                                    Log.d("Exception ex:", err);
+                                }
+                                String result = (networkResp.getString("statusCode"));
+                                Log.d("Status Code is :", result);
+                                String S = "EVENT STATUS";
+                                if (result != null) {
+                                    if (result.equals("200")) {
+                                        Log.d("Reset success", S);
+                                        onPostExecute();
+
+                                    } else {
+                                        Log.d("Reset Failed", S);
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Toast.makeText(LoginActivity.this, "Invalid Details!", Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+
+                                    }
+                                }
+                            } catch (Exception e) {
+                                Log.d("InputStream", e.getLocalizedMessage());
+                            }
+                        }
+                }
+            });
+                    thread.start();
+        }
+        private void onPostExecute() {
+
+            String S="STATUS";
+            Log.d("Starting!",S);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(LoginActivity.this, "Check Your Email Id for Reset Link!", Toast.LENGTH_LONG).show();
+
+                }
+            });
+
+        }
+        @Override
+        protected void onCancelled()
+        {
+
+        }
+    }
+
 }
