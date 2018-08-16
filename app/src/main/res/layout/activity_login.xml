@@ -40,11 +40,13 @@
                     android:id="@+id/username"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/Username"
+                    android:hint="@string/prompt_email"
                     android:focusable="true"
+                    android:focusableInTouchMode="true"
                     android:inputType="textVisiblePassword|textNoSuggestions"
                     android:maxLines="1"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    android:layout_marginBottom="20dp"/>
 
             </android.support.design.widget.TextInputLayout>
 

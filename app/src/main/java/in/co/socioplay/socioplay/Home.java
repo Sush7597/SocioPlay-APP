@@ -42,10 +42,10 @@ public class Home extends AppCompatActivity {
                     mTextMessage.setText(R.string.title_home);
                     return true;
                 case R.id.navigation_dashboard:
-                    mTextMessage.setText(R.string.title_dashboard);
+                    mTextMessage.setText(R.string.Chats);
                     return true;
                 case R.id.navigation_notifications:
-                    mTextMessage.setText(R.string.title_notifications);
+                    mTextMessage.setText(R.string.profile);
                     return true;
             }
             return false;
@@ -127,7 +127,7 @@ public class Home extends AppCompatActivity {
 
                     URL url = null;
                     try {
-                        url = new URL("https://b18106f3.ngrok.io/users/delete");
+                        url = new URL("https://socioplay.in/users/delete");
 
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
@@ -161,7 +161,7 @@ public class Home extends AppCompatActivity {
                     }
 
                     try {
-                        String status=res.getString("statusCode");
+                        String status=res.getString("status");
                         Log.d("Status Code:", status);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -196,7 +196,7 @@ public class Home extends AppCompatActivity {
 
                     URL url = null;
                     try {
-                        url = new URL("https://b18106f3.ngrok.io/users/logout");
+                        url = new URL("https://socioplay.in/users/logout");
 
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
@@ -230,7 +230,7 @@ public class Home extends AppCompatActivity {
                     }
 
                     try {
-                        String status=res.getString("statusCode");
+                        String status=res.getString("status");
                         Log.d("Status Code:", status);
                     } catch (JSONException e) {
                         e.printStackTrace();

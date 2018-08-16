@@ -60,10 +60,29 @@
                 android:layout_height="wrap_content">
 
                 <AutoCompleteTextView
-                    android:id="@+id/username"
+                    android:id="@+id/fname"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/Username"
+                    android:hint="@string/fname"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:inputType="textVisiblePassword|textNoSuggestions"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:layout_marginBottom="20dp"/>
+
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <AutoCompleteTextView
+                    android:id="@+id/lname"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/lname"
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:inputType="textVisiblePassword|textNoSuggestions"

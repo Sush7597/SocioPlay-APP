@@ -51,7 +51,8 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
     private AutoCompleteTextView Email;
     private EditText password;
     private EditText confirm;
-    private AutoCompleteTextView Username;
+    private AutoCompleteTextView fname;
+    private AutoCompleteTextView lname;
     private View SignUpFormView;
     private View progressView;
     private static final int REQUEST_READ_CONTACTS = 0;
@@ -64,7 +65,8 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
         Email = findViewById(R.id.Email);
         password = findViewById(R.id.Password);
         confirm = findViewById(R.id.re_Password);
-        Username=findViewById(R.id.username);
+        fname=findViewById(R.id.fname);
+        lname=findViewById(R.id.lname);
         Button sign_up = findViewById(R.id.SignUp);
         progressView = findViewById(R.id.sign_up_progress);
         SignUpFormView = findViewById(R.id.sign_form);
@@ -199,12 +201,15 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
         }
 
         // Reset errors.
+        fname.setError(null);
+        lname.setError(null);
         Email.setError(null);
         password.setError(null);
 
         // Store values at the time of the login attempt.
         String email = Email.getText().toString();
-        String username = Username.getText().toString();
+        String fnam = fname.getText().toString();
+        String lnam = lname.getText().toString();
         String pass1 = password.getText().toString();
         String pass2 = confirm.getText().toString();
         boolean cancel = false;
@@ -228,6 +233,16 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
             focusView = Email;
             cancel = true;
         }
+        if (TextUtils.isEmpty(fnam)) {
+            fname.setError(getString(R.string.error_field_required));
+            focusView = fname;
+            cancel = true;
+        }
+        if (TextUtils.isEmpty(lnam)) {
+            lname.setError(getString(R.string.error_field_required));
+            focusView = lname;
+            cancel = true;
+        }
         if (!isEmailValid())
         {
             Email.setError(getString(R.string.error_invalid_email));
@@ -243,7 +258,7 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
                 // Show a progress spinner, and kick off a background task to
                 // perform the user login attempt.
                 showProgress(true);
-                mAuthTask = new UserSignupTask(email, pass1, username);
+                mAuthTask = new UserSignupTask(email , pass1 , fnam , lnam);
                 mAuthTask.execute((Void) null);
             } else
                 confirm.setError("Passwords Doesn't Match");
@@ -299,20 +314,23 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
 
 
         final String mEmail;
-        final String mUsername;
+        final String mfname;
+        final String mlname;
         final String mPassword;
         final JSONObject log= new JSONObject();
 
 
-        UserSignupTask(String email, String pass1 , String username)  {
+        UserSignupTask(String email, String pass1 , String fname , String lname )  {
             mEmail=email;
-            mUsername = username;
+            mfname = fname;
+            mlname = lname;
             mPassword = pass1;
 
             try {
-                log.put("username",mUsername);
                 log.put("password",mPassword);
-                log.put("emailid",email);
+                log.put("email",email);
+                log.put("first_name",fname);
+                log.put("last_name",lname);
                 if (log.length() > 0) {
                     doInBackground();
                 }
@@ -335,7 +353,7 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
 
             try {
                 try {
-                    URL url = new URL("https://b18106f3.ngrok.io/users/signup");
+                    URL url = new URL("https://socioplay.in/users/register");
                     MediaType JSON = MediaType.parse("application/json; charset=utf-8");
                     OkHttpClient client = new OkHttpClient();
                     okhttp3.RequestBody body = RequestBody.create(JSON, log.toString());
@@ -353,7 +371,7 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
                     String err = String.format("{\"result\":\"false\",\"error\":\"%s\"}", ex.getMessage());
                     Log.d("Exception ex:",err);
                 }
-                String result = (networkResp.getString("statusCode"));
+                String result = (networkResp.getString("status"));
                 String token = (networkResp.getString("result"));
                 Log.d("Token is :",token);
                 Log.d("Status Code is :",result);
@@ -387,20 +405,8 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
             }
             else
             {
-                if(result.equals("451"))
-            {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showProgress(false);
-                        Username.setFocusable(true);
-                        Username.requestFocus();
-                        Username.setError(getString(R.string.User_Exists));
 
-                    }
-                });
-            }
-            else if(result.equals("452"))
+            if(result.equals("452"))
             {
                 runOnUiThread(new Runnable() {
                     @Override
@@ -409,22 +415,6 @@ public class SignUp extends AppCompatActivity implements LoaderManager.LoaderCal
                         Email.setFocusable(true);
                         Email.requestFocus();
                         Email.setError(getString(R.string.email_Exists));
-
-                    }
-                });
-
-
-            }
-            else if(result.equals("450"))
-            {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showProgress(false);
-                        Email.requestFocus();
-                        Email.setError(getString(R.string.email_Exists));
-                        Username.requestFocus();
-                        Username.setError(getString(R.string.User_Exists));
 
                     }
                 });

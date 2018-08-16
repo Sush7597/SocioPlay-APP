@@ -43,4 +43,8 @@
     <string name="OR">OR</string>
     <string name="Usernameforp">Enter Username to Recover Password.</string>
     <string name="prompt_emailforu">Enter Email-ID to Recover Username.</string>
+    <string name="profile">Profile</string>
+    <string name="Chats">Chats</string>
+    <string name="fname">First Name</string>
+    <string name="lname">Last Name</string>
 </resources>

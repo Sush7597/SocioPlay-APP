@@ -134,15 +134,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             public void onClick(View v) {
                View view =  LayoutInflater.from(LoginActivity.this).inflate(R.layout.forget_u_or_p,null);
                AlertDialog.Builder forget = new AlertDialog.Builder(LoginActivity.this);
-                user = view.findViewById(R.id.name);
                 mail = view.findViewById(R.id.mail);
                 forget.setView(view);
                 forget.setPositiveButton("Request", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String user1 = user.getText().toString();
                         String mail1 = mail.getText().toString();
-                        forget obj = new forget(user1, mail1);
+                        forget obj = new forget(mail1);
                         obj.doInBackground();
                     }
                 });
@@ -365,7 +363,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mUsername = username;
             mPassword = password;
             try {
-            log.put("username",mUsername);
+            log.put("email",mUsername);
             log.put("password",mPassword);
 
                 if (log.length() > 0) {
@@ -390,7 +388,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             try {
                 try {
-                    URL url = new URL("https://b18106f3.ngrok.io/users/login");
+                    URL url = new URL("https://socioplay.in/users/login");
                     MediaType JSON = MediaType.parse("application/json; charset=utf-8");
                     OkHttpClient client = new OkHttpClient();
                     okhttp3.RequestBody body = RequestBody.create(JSON, log.toString());
@@ -408,7 +406,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     String err = String.format("{\"result\":\"false\",\"error\":\"%s\"}", ex.getMessage());
                     Log.d("Exception ex:",err);
                 }
-                String result = (networkResp.getString("statusCode"));
+                String result = (networkResp.getString("status"));
                 String token = networkResp.getString("result");
                 Log.d("Status Code is :",result);
                 Log.d("Token is :",token);
@@ -465,13 +463,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @SuppressLint("StaticFieldLeak")
     public class forget extends AsyncTask<Void, Void, Boolean> {
 
-        final String mname;
+
         final String mmail;
         int i;
 
 
-        forget(String username, String Email)  {
-            mname = username;
+        forget(String Email)  {
+
             mmail = Email;
             Log.d("Status","Constructor Called");
         }
@@ -482,27 +480,23 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             try {
                 // Simulate network access.
                 Thread.sleep(2000);
-                if(mname!=null)
-                    i=1;
-                else if (mmail!=null)
-                    i=0;
-                getServerResponse(mname,mmail,i);
+                getServerResponse(mmail);
             } catch (InterruptedException e) {
                 Log.d("Exception from :","doInBackground");
                 e.printStackTrace(); }
             return null;
         }
-        private void getServerResponse( final String log1 , final String log2, final int j) {
+        private void getServerResponse(final String log1) {
 
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     JSONObject networkResp = null;
-                    if (j == 1) {
+                   {
                         try {
                             try {
                                 String query = URLEncoder.encode(log1, "utf-8");
-                                URL url = new URL("https://b18106f3.ngrok.io/reset/password/" + query);
+                                URL url = new URL("https://socioplay.in/reset/password/" + query);
                                 OkHttpClient client = new OkHttpClient();
                                 okhttp3.Request request = new okhttp3.Request.Builder()
                                         .url(url)
@@ -517,7 +511,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 String err = String.format("{\"result\":\"false\",\"error\":\"%s\"}", ex.getMessage());
                                 Log.d("Exception ex:", err);
                             }
-                            String result = (networkResp.getString("statusCode"));
+                            String result = (networkResp.getString("status"));
                             Log.d("Status Code is :", result);
                             String S = "EVENT STATUS";
                             if (result != null) {
@@ -540,48 +534,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             Log.d("InputStream", e.getLocalizedMessage());
                         }
                     }
-                    if (j == 2) {
-                        try {
-                            try {
-                                    String query = URLEncoder.encode(log2, "utf-8");
-                                    URL url = new URL("https://b18106f3.ngrok.io/reset/password/" + query);
-                                    OkHttpClient client = new OkHttpClient();
-                                    okhttp3.Request request = new okhttp3.Request.Builder()
-                                            .url(url)
-                                            .header("Content-Type", "application/json")
-                                            .build();
 
-                                    okhttp3.Response response = client.newCall(request).execute();
-                                    String networkResp1 = response.body().string();
-                                    networkResp = new JSONObject(networkResp1);
-
-                                }catch(Exception ex){
-                                    String err = String.format("{\"result\":\"false\",\"error\":\"%s\"}", ex.getMessage());
-                                    Log.d("Exception ex:", err);
-                                }
-                                String result = (networkResp.getString("statusCode"));
-                                Log.d("Status Code is :", result);
-                                String S = "EVENT STATUS";
-                                if (result != null) {
-                                    if (result.equals("200")) {
-                                        Log.d("Reset success", S);
-                                        onPostExecute();
-
-                                    } else {
-                                        Log.d("Reset Failed", S);
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                Toast.makeText(LoginActivity.this, "Invalid Details!", Toast.LENGTH_LONG).show();
-                                            }
-                                        });
-
-                                    }
-                                }
-                            } catch (Exception e) {
-                                Log.d("InputStream", e.getLocalizedMessage());
-                            }
-                        }
                 }
             });
                     thread.start();
