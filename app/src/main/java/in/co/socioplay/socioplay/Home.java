@@ -19,14 +19,24 @@ import android.widget.Button;
 import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import okhttp3.OkHttpClient;
-
-import static android.provider.Contacts.SettingsColumns.KEY;
+import android.content.Context;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Toast;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Home extends AppCompatActivity {
@@ -51,7 +61,9 @@ public class Home extends AppCompatActivity {
             return false;
         }
     };
-
+    private List<Event> eventList = new ArrayList<>();
+    private EventAdapter eAdapter;
+    RecyclerView recyclerView;
 
     @Override
         protected void onCreate (Bundle savedInstanceState){
@@ -62,6 +74,21 @@ public class Home extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         token();
+
+        Event event = new Event("Cricket", "Pitampura", "20-August-2015");
+        eventList.add(event);
+        event = new Event("Chess", "Rohini", "21-August-2015");
+        eventList.add(event);
+
+
+        recyclerView = findViewById(R.id.r_view);
+        eAdapter = new EventAdapter(eventList);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(eAdapter);
+        //prepareEventData();
+        eAdapter.notifyDataSetChanged();
 
     }
 
@@ -93,7 +120,7 @@ public class Home extends AppCompatActivity {
             case R.id.del :
                 DELETE obj= new DELETE();
                 obj.doInBackground();
-                File sharedPreferenceFile = new File("/data/data/"+ getPackageName()+ "/shared_prefs/");
+                @SuppressLint("SdCardPath") File sharedPreferenceFile = new File("/data/data/"+ getPackageName()+ "/shared_prefs/");
                 File[] listFiles = sharedPreferenceFile.listFiles();
                 for (File file : listFiles) {
                     file.delete();
@@ -104,7 +131,7 @@ public class Home extends AppCompatActivity {
             case R.id.logout:
                 Logout ob = new Logout();
                 ob.doInBackground();
-                File sharedPreferenceFile1 = new File("/data/data/"+ getPackageName()+ "/shared_prefs/");
+                @SuppressLint("SdCardPath") File sharedPreferenceFile1 = new File("/data/data/"+ getPackageName()+ "/shared_prefs/");
                 File[] listFiles1 = sharedPreferenceFile1.listFiles();
                 for (File file : listFiles1) {
                     file.delete();
@@ -117,6 +144,7 @@ public class Home extends AppCompatActivity {
             return super.onOptionsItemSelected(item);
     }
 
+    @SuppressLint("StaticFieldLeak")
     public class DELETE extends AsyncTask<Void,Void,Boolean>
     {
 
@@ -134,6 +162,7 @@ public class Home extends AppCompatActivity {
                     }
 
                     OkHttpClient client = new OkHttpClient();
+                    assert url != null;
                     okhttp3.Request request = new okhttp3.Request.Builder()
                                .url(url)
                                  .header("Authorization", "Bearer "+ token1)
@@ -148,6 +177,7 @@ public class Home extends AppCompatActivity {
                     }
                     String networkResp1 = null;
                     try {
+                        assert response != null;
                         networkResp1 = response.body().string();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -161,6 +191,7 @@ public class Home extends AppCompatActivity {
                     }
 
                     try {
+                        assert res != null;
                         String status=res.getString("status");
                         Log.d("Status Code:", status);
                     } catch (JSONException e) {
@@ -186,6 +217,7 @@ public class Home extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
     public class Logout extends AsyncTask<Void,Void,Boolean>
     {
 
@@ -203,6 +235,7 @@ public class Home extends AppCompatActivity {
                     }
 
                     OkHttpClient client = new OkHttpClient();
+                    assert url != null;
                     okhttp3.Request request = new okhttp3.Request.Builder()
                             .url(url)
                             .header("Authorization", "Bearer "+ token1)
@@ -217,6 +250,7 @@ public class Home extends AppCompatActivity {
                     }
                     String networkResp1 = null;
                     try {
+                        assert response != null;
                         networkResp1 = response.body().string();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -230,6 +264,7 @@ public class Home extends AppCompatActivity {
                     }
 
                     try {
+                        assert res != null;
                         String status=res.getString("status");
                         Log.d("Status Code:", status);
                     } catch (JSONException e) {
@@ -256,7 +291,20 @@ public class Home extends AppCompatActivity {
                 e.printStackTrace(); }
             return null;
         }
+
     }
+
+//    private void prepareEventData() {
+//        Event event = new Event("Cricket", "Pitampura", "20-August-2015");
+//        eventList.add(event);
+//
+//        event = new Event("Chess", "Rohini", "21-August-2015");
+//        eventList.add(event);
+//
+//        eAdapter.notifyDataSetChanged();
+//    }
+
+
 
 
 

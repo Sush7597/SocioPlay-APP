@@ -47,4 +47,5 @@
     <string name="Chats">Chats</string>
     <string name="fname">First Name</string>
     <string name="lname">Last Name</string>
+    <string name="title_activity_rview">Rview</string>
 </resources>
