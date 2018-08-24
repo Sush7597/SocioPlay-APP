@@ -83,7 +83,7 @@
                 android:id="@+id/resetP"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/ResetPorU"
+                android:text="@string/ResetP"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="30dp"
                 android:textColor="@color/colorPrimaryDark"

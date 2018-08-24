@@ -153,6 +153,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
 
     }
+
+    public void refresh() {
+
+        finish();
+        startActivity(getIntent());
+
+    }
+
     private boolean isEmailValid(){
 
         String getText=mail.getText().toString().trim();
@@ -351,6 +359,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      * */
+
+
     @SuppressLint("StaticFieldLeak")
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
@@ -431,9 +441,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             @Override
                             public void run() {
                                 showProgress(false);
-                                Toast.makeText(LoginActivity.this, "Invalid Username Or Password!", Toast.LENGTH_LONG).show();
-                                mPasswordView.requestFocus();
-                                mPasswordView.setError("Invalid Username or Password!");
+                                Toast.makeText(LoginActivity.this, "Invalid E-mail ID Or Password!", Toast.LENGTH_LONG).show();
+                                refresh();
                             }
                         });
 
@@ -444,7 +453,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         }
         private void onPostExecute(String token) {
-          //  mAuthTask = null;
 
                 Intent intent=new Intent(LoginActivity.this,Home.class);
                 String S="STATUS";
@@ -547,7 +555,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 @Override
                 public void run() {
                     Toast.makeText(LoginActivity.this, "Check Your Email Id for Reset Link!", Toast.LENGTH_LONG).show();
-
+                    refresh();
                 }
             });
 

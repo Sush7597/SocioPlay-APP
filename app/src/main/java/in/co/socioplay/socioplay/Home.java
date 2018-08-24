@@ -57,7 +57,6 @@ import static in.co.socioplay.socioplay.R.id.drawer_layout;
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private TextView mTextMessage;
     String  token1="null";
     private List<Event> eventList = new ArrayList<>();
     RecyclerView rView;
@@ -69,7 +68,6 @@ public class Home extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mTextMessage = findViewById(R.id.message);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -149,13 +147,10 @@ public class Home extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         switch (id)
         {
-            case R.id.del :
+            case R.id.delete :
                 DELETE obj= new DELETE();
                 obj.doInBackground();
                 @SuppressLint("SdCardPath") File sharedPreferenceFile = new File("/data/data/"+ getPackageName()+ "/shared_prefs/");
@@ -166,7 +161,7 @@ public class Home extends AppCompatActivity
                 Intent in3 = new Intent(Home.this,LoginActivity.class);
                 startActivity(in3);
                 break;
-            case R.id.logout:
+            case R.id.lout:
                 Logout ob = new Logout();
                 ob.doInBackground();
                 @SuppressLint("SdCardPath") File sharedPreferenceFile1 = new File("/data/data/"+ getPackageName()+ "/shared_prefs/");

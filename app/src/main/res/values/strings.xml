@@ -37,7 +37,7 @@
     <string name="error_incorrect">Invalid Username or Password!</string>
     <string name="create_a_new_account">Create a new account</string>
     <string name="Log_out">Logout</string>
-    <string name="ResetP">Forgot Password!</string>
+    <string name="ResetP">Forgot Password?</string>
     <string name="ResetPorU">Forgot Password or Username?</string>
     <string name="Request">Request To Change</string>
     <string name="OR">OR</string>
@@ -48,4 +48,5 @@
     <string name="fname">First Name</string>
     <string name="lname">Last Name</string>
     <string name="title_activity_rview">Rview</string>
+    <string name="prompt_mail">Enter Email ID</string>
 </resources>
