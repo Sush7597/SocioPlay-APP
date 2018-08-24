@@ -1,7 +1,19 @@
 package in.co.socioplay.socioplay;
 
-
+import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.view.View;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -11,6 +23,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,57 +50,62 @@ import android.view.View;
 import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import static in.co.socioplay.socioplay.R.id.drawer_layout;
 
-public class Home extends AppCompatActivity {
+public class Home extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener {
+
     private TextView mTextMessage;
     String  token1="null";
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    mTextMessage.setText(R.string.title_home);
-                    return true;
-                case R.id.navigation_dashboard:
-                    mTextMessage.setText(R.string.Chats);
-                    return true;
-                case R.id.navigation_notifications:
-                    mTextMessage.setText(R.string.profile);
-                    return true;
-            }
-            return false;
-        }
-    };
     private List<Event> eventList = new ArrayList<>();
-    private EventAdapter eAdapter;
-    RecyclerView recyclerView;
+    RecyclerView rView;
 
     @Override
-        protected void onCreate (Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         mTextMessage = findViewById(R.id.message);
-        BottomNavigationView navigation = findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+
+        DrawerLayout drawer = findViewById(drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
         token();
 
-        Event event = new Event("Cricket", "Pitampura", "20-August-2015");
+        Event event = new Event("Cricket", "Pitampura", "20-August-2018");
         eventList.add(event);
-        event = new Event("Chess", "Rohini", "21-August-2015");
+        event = new Event("Chess", "Rohini", "21-August-2018");
         eventList.add(event);
 
+        EventAdapter eAdapter = new EventAdapter(eventList);
+        rView = findViewById(R.id.rview);
 
-        recyclerView = findViewById(R.id.r_view);
-        eAdapter = new EventAdapter(eventList);
+
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(eAdapter);
-        //prepareEventData();
+        rView.setLayoutManager(mLayoutManager);
+        rView.setItemAnimator(new DefaultItemAnimator());
+        rView.setAdapter(eAdapter);
+
+
         eAdapter.notifyDataSetChanged();
 
     }
@@ -105,16 +123,36 @@ public class Home extends AppCompatActivity {
             startActivity(act);
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = findViewById(drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-            getMenuInflater().inflate(R.menu.menu_main,menu);
-
-        return super.onCreateOptionsMenu(menu);
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.home, menu);
+        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id=item.getItemId();
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
         switch (id)
         {
             case R.id.del :
@@ -141,9 +179,35 @@ public class Home extends AppCompatActivity {
 
         }
 
-            return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item);
+
+
     }
 
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_camera) {
+            // Handle the camera action
+        } else if (id == R.id.nav_gallery) {
+
+        } else if (id == R.id.nav_slideshow) {
+
+        } else if (id == R.id.nav_manage) {
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        DrawerLayout drawer = findViewById(drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
     @SuppressLint("StaticFieldLeak")
     public class DELETE extends AsyncTask<Void,Void,Boolean>
     {
@@ -164,10 +228,10 @@ public class Home extends AppCompatActivity {
                     OkHttpClient client = new OkHttpClient();
                     assert url != null;
                     okhttp3.Request request = new okhttp3.Request.Builder()
-                               .url(url)
-                                 .header("Authorization", "Bearer "+ token1)
-                                  .header("Content-Type","application/json")
-                                     .build();
+                            .url(url)
+                            .header("Authorization", "Bearer "+ token1)
+                            .header("Content-Type","application/json")
+                            .build();
 
                     okhttp3.Response response = null;
                     try {
@@ -178,7 +242,7 @@ public class Home extends AppCompatActivity {
                     String networkResp1 = null;
                     try {
                         assert response != null;
-                        networkResp1 = response.body().string();
+                        networkResp1 = Objects.requireNonNull(response.body()).string();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -202,11 +266,11 @@ public class Home extends AppCompatActivity {
 
             );
             thread.start();
-    }
+        }
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-           try {
+            try {
                 // Simulate network access.
                 Thread.sleep(2000);
                 DACC();
@@ -251,7 +315,7 @@ public class Home extends AppCompatActivity {
                     String networkResp1 = null;
                     try {
                         assert response != null;
-                        networkResp1 = response.body().string();
+                        networkResp1 = Objects.requireNonNull(response.body()).string();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -293,19 +357,5 @@ public class Home extends AppCompatActivity {
         }
 
     }
-
-//    private void prepareEventData() {
-//        Event event = new Event("Cricket", "Pitampura", "20-August-2015");
-//        eventList.add(event);
-//
-//        event = new Event("Chess", "Rohini", "21-August-2015");
-//        eventList.add(event);
-//
-//        eAdapter.notifyDataSetChanged();
-//    }
-
-
-
-
 
 }
