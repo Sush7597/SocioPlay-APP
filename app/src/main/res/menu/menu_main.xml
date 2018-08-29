@@ -13,4 +13,7 @@
         android:orderInCategory="102"
         android:title="@string/Delete_Account"
          />
+    // change password menu item added
+    <item android:id="@+id/changepassword"
+        android:title="Change Password"></item>
 </menu>

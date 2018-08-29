@@ -171,6 +171,14 @@ public class Home extends AppCompatActivity
                 }
                 Intent in4 = new Intent(Home.this,LoginActivity.class);
                 startActivity(in4);
+                break;
+
+            //added new menu functionality
+
+
+            case R.id.changepassword:
+                Intent intent = new Intent(getApplicationContext(),ChangePassword.class);
+                startActivity(intent);
 
         }
 
